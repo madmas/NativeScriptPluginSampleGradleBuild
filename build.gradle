@@ -1,0 +1,24 @@
+
+allprojects {
+    project.ext {
+        androidGradleBuildToolsVersion="3.5.0"
+
+        compileSdkVersion=28
+        buildToolsVersion="28.0.3"
+    }
+}
+
+task configAndroidSdkLicenses {
+
+    if (!System.env.ANDROID_HOME) {
+        throw new GradleException('no ANDROID_HOME set. consider export ANDROID_HOME=' + "$projectDir/android-sdk")
+    }
+
+    mkdir System.env.ANDROID_HOME
+    copy {
+        from tarTree('android-sdk-licenses.tgz')
+        into System.env.ANDROID_HOME
+    }
+}
+
+gradle.startParameter.taskNames = [":configAndroidSdkLicenses"] + gradle.startParameter.taskNames

@@ -1,0 +1,53 @@
+= Plugin Demo to demonstrate Issue #4995
+
+This repository contains a example plugin which build is encapsulated by an grade build config to have it encapsulated to run within CI systems.
+
+
+== Demonstrate / reproduce the problem
+
+Try to run the demo application on android with:
+
+* Install native script: `npm install -g nativescript`
+
+```
+cd plugin/src
+npm run demo.android
+```
+
+=== Error message
+
+The error message expected is:
+
+```
+....
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Project directory '/Users/sample/tmp/pluginseed/plugin/demo/platforms/tempPlugin/nativescript_yourplugin' is not part of the build defined by settings file '/Users/markus/tmp/pluginseed/settings.gradle'. If this is an unrelated build, it must have its own settings file.
+
+* Try:
+Run with --stacktrace option to get the stack trace. Run with --info or --debug option to get more log output. Run with --scan to get full insights.
+
+* Get more help at https://help.gradle.org
+
+BUILD FAILED in 0s
+Failed to build plugin nativescript-yourplugin : 
+Error: Command ./gradlew failed with exit code 1
+npm ERR! code ELIFECYCLE
+npm ERR! syscall spawn
+npm ERR! file sh
+npm ERR! errno ENOENT
+npm ERR! nativescript-yourplugin@1.0.0 demo.android: `npm run tsc && cd ../demo && tns run android --emulator`
+npm ERR! spawn ENOENT
+npm ERR! 
+npm ERR! Failed at the nativescript-yourplugin@1.0.0 demo.android script.
+npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
+
+npm ERR! A complete log of this run can be found in:
+npm ERR!     /Users/sample/.npm/_logs/2019-10-08T11_44_00_677Z-debug.log
+```
+    
+== License
+
+Apache License Version 2.0, January 2004

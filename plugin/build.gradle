@@ -1,0 +1,65 @@
+import groovy.xml.XmlUtil
+
+plugins {
+    id "com.moowork.node" version "1.2.0"
+    id "org.ajoberstar.grgit" version "2.1.1"
+    id "de.undercouch.download" version "3.3.0"
+}
+
+node {
+    // Version of node to use.
+    version = '10.16.3'
+
+    // Version of npm to use.
+    npmVersion = '6.11.2'
+
+    // Base URL for fetching node distributions (change if you have a mirror).
+    distBaseUrl = 'https://nodejs.org/dist'
+
+    // If true, it will download node using above parameters.
+    // If false, it will try to use globally installed node.
+    download = true
+
+    // Set the work directory for unpacking node
+    workDir = file("${project.buildDir}/nodejs")
+
+    npmWorkDir = file("${project.buildDir}/npm")
+
+    nodeModulesDir = file("${projectDir}")
+}
+
+import de.undercouch.gradle.tasks.download.Download
+
+task downloadAndroid(type: Download) {
+    def osName = System.getProperty("os.name").toLowerCase()
+    if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
+        osName = 'darwin'
+    }
+
+    src "https://dl.google.com/android/repository/sdk-tools-$osName-4333796.zip"
+    dest new File(buildDir, 'sdk-tools.zip')
+    overwrite false
+}
+
+task installAndroid(dependsOn: downloadAndroid, type: Copy) {
+    from zipTree(downloadAndroid.dest)
+    into "${System.env.ANDROID_HOME}/"
+}
+
+task updateAndroidSdk(type: Exec) {
+    commandLine "${System.env.ANDROID_HOME}/tools/bin/sdkmanager", "tools", "platform-tools", "platforms;android-28", "build-tools;28.0.3", "extras;android;m2repository", "extras;google;m2repository"
+}
+
+installAndroid.finalizedBy updateAndroidSdk
+
+task tnsInstall(type: NpmTask) {
+    args = ['install', '-g', 'nativescript@6.1.2', '--no-save', '--silentMode']
+}
+
+tnsInstall.dependsOn(installAndroid)
+
+task build(type: NpmTask, dependsOn: tnsInstall) {
+    description = "Build the encrypt plugin"
+    workingDir = file("${project.projectDir}/src")
+    args = ['run', 'build']
+}
